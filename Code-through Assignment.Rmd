@@ -1,0 +1,126 @@
+---
+title: "Code-through Assignment"
+author: "Kavin Karthikeyan"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<center>
+
+![](https://github.com/kkarthi6/CPP526_Kavin/blob/master/Code-thorugh%20Header%20Img.jpg?raw=true)
+
+  -- Photo by Austin Distel "www.distel.com" from Unsplash --  
+</center>
+
+
+# Visualizing trading data in R  
+
+This tutorial explains how to import high-frequency trading data and visualize it using the Plotly library
+
+
+## Library import  
+Import the necessary libraries that you intend to use for your project.  
+There are packages that allow real-time trading data import which could come handy for algo trading.  
+I have used the following packages for my codethrough.  
+
+library(plotly) # Graphs  
+
+library(xts) # Time-series constructor  
+
+library(tidyverse) #Ease of use
+
+```{r global, include=FALSE}
+
+# library(shinythemes)
+library(plotly) #Plotly provides online graphing, analytics, and statistics tools
+library(xts) #Constructor function for creating an extensible time-series
+library(tidyverse) # Used for faster and easier data analysis
+
+```
+
+
+## Data import  
+I have used the Metatrader application to download USDEUR Forex trade data as a csv file.  
+Many websites provide us with trade data in various formats.  
+CSV would be suited for use in our case. I have downloaded the EURUSD forex trade data from Metarader application.
+
+You can find the application in the following link.
+
+https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe?utm_source=www.metatrader4.com&utm_campaign=download
+
+I have uploaded the file onto my Github account for ease of access.
+
+```{r Data import }
+# Importing trading data from the csv file downloaded from Metatrade ----
+
+library (readr)
+
+data <- read.csv("https://raw.githubusercontent.com/kkarthi6/CPP526_Kavin/master/EURUSDM1.csv",
+                header = FALSE, sep = ",", fileEncoding = "UTF-16LE", dec = ".")
+
+head(data)
+
+```
+
+
+## Data cleaning  
+Data that is available online would not always meet our requirements.  
+We will need to make a few changes to the way data is stored and make sure it is suited for the type of analysis that we intend to carry out.  
+
+
+```{r Data cleaning }
+
+# Renaming the columns using the column name vector
+
+colnames_ <- c("Date", "Open", "High", "Low", "Close", "Tick", "Volume")
+colnames(data) <- colnames_
+head(data)
+
+# Formatting the date to standard form YYYY-MM-DD
+
+data$Date <- gsub("\\.", "-", data$Date)
+data$Date <- as.POSIXct(data$Date)
+head(data)
+
+```
+
+
+## Data visualization
+The plotly package is used here for visualization.  
+Since trading data requires special plotting methods, we have used plotly.  
+The last 20 minutes of data alone is included in our visualization to improve graph readability.
+
+
+```{r Data visualization}
+
+# Using plotly to visualize the last 20 min of trading data
+
+fig <- tail(data, 20) %>%
+  plot_ly(x = ~Date, type = "candlestick",
+          open = ~Open, close = ~Close,
+          high = ~High, low = ~Low)
+fig <- fig %>% layout(title = "USDEUR trading data ")
+fig
+
+```
+
+
+
+## References
+
+tidyverse package documentation  
+
+https://cran.r-project.org/web/packages/tidyverse/tidyverse.pdf  
+
+plotly package documentation  
+
+https://cran.r-project.org/web/packages/plotly/plotly.pdf  
+
+This interesting article of visualizing high-frequency trading data in R  
+
+https://towardsdatascience.com/how-to-visualize-high-frequency-financial-data-using-plotly-and-r-97171ae84be1?source=social.tw 
+
